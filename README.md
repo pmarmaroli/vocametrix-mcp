@@ -129,6 +129,10 @@ npm run build
 npm run inspector  # Test with MCP Inspector
 ```
 
+## MCP Registry
+
+Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io/) under `io.github.pmarmaroli/vocametrix-mcp`. Available for one-click installation in MCP-compatible clients (Claude Desktop, Cursor, Zed, Windsurf, and more).
+
 ## Related projects
 
 The Vocametrix ecosystem:
