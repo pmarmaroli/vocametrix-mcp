@@ -129,6 +129,15 @@ npm run build
 npm run inspector  # Test with MCP Inspector
 ```
 
+## Related projects
+
+The Vocametrix ecosystem:
+
+- 📘 **[Vocametrix API documentation](https://www.vocametrix.com/api-docs)** — full reference for the underlying REST API powering this MCP server.
+- 📐 **[OpenAPI 3.1 specification](https://www.vocametrix.com/openapi.json)** — machine-readable schema for all 48 endpoints.
+- 🐍 **[vocametrix-python](https://github.com/pmarmaroli/vocametrix-python)** — official Python SDK if you want direct API access from Python (`pip install vocametrix`).
+- 🟦 **[vocametrix-js](https://github.com/pmarmaroli/vocametrix-js)** — official TypeScript / JavaScript SDK used internally by this MCP server (`npm install vocametrix`).
+
 ## License
 
 MIT — see [LICENSE](LICENSE)
