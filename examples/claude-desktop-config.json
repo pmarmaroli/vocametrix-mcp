@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "vocametrix": {
+      "command": "npx",
+      "args": ["-y", "@vocametrix/mcp-server"],
+      "env": {
+        "VOCAMETRIX_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
