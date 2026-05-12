@@ -25,3 +25,8 @@ export const email = z
   .email()
   .optional()
   .describe("Optional contact email used for upload tracking");
+
+export const AVQI_VERSION: Record<string, "v02.03" | "v03.01"> = {
+  en: "v02.03", nl: "v02.03", de: "v02.03",
+  fr: "v03.01", es: "v03.01", it: "v03.01",
+};

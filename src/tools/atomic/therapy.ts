@@ -11,7 +11,9 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
     "Launch an asynchronous LangGraph-powered therapy plan generation from session audio embeddings. " +
     "Returns a therapy_session_id. Use vocametrix_get_therapy_status to poll progress, " +
     "then vocametrix_get_therapy_result to retrieve the plan once complete (~30–120 seconds). " +
-    "Requires wav2vec embeddings — run eGeMAPS or embedding extraction first.",
+    "BEFORE CALLING: Confirm that wav2vecOutput comes from vocametrix_extract_egemaps " +
+    "(called with extractWav2Vec=true) — do not pass invented or placeholder data. " +
+    "Passing arbitrary values will produce a clinically meaningless therapy plan.",
     {
       sessionMetadata: z.record(z.unknown()).describe("Session metadata object (must include patient_id)"),
       wav2vecOutput: z.record(z.unknown()).describe("wav2vec embeddings output (must include summary_statistics)"),
@@ -69,7 +71,8 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
     "vocametrix_approve_therapy_plan",
     "Human-in-the-loop approval gate for generated therapy plans. " +
     "Actions: 'approve' (locks and delivers plan), 'reject' (discards), 'modify' (requires feedback, re-generates). " +
-    "This action is irreversible — once approved, the plan is sent for delivery.",
+    "This action is irreversible — once approved, the plan is sent for delivery. " +
+    "BEFORE CALLING with action='approve': always show the plan content to the user and get explicit confirmation first.",
     {
       sessionId: z.string().min(1).describe("Session ID from vocametrix_generate_therapy_plan"),
       action: z.enum(["approve", "modify", "reject"]).describe("Approval decision"),

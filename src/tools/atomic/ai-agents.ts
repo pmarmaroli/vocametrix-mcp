@@ -10,7 +10,10 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
     "vocametrix_interpret_voice_metrics",
     "Translate raw voice metrics (jitter, shimmer, HNR, CPPS, F0, etc.) into clinical-language interpretation " +
     "with severity classification (normal / mild / moderate / severe) and actionable recommendations. " +
-    "Useful when you have metric values from other tools and want a clinician-readable summary.",
+    "Useful when you have metric values from other tools and want a clinician-readable summary. " +
+    "BEFORE CALLING: Pass metrics that come from Vocametrix measurement tools " +
+    "(e.g. vocametrix_calculate_jitter_shimmer, vocametrix_calculate_hnr, vocametrix_calculate_cpp). " +
+    "Do not invent or estimate values — passing arbitrary numbers produces misleading clinical output.",
     {
       metrics: z.record(z.unknown()).describe("Voice metrics object (e.g. { jitter: 1.2, shimmer: 3.5, hnr: 18.0 })"),
       patientAge: z.number().int().min(0).max(120),
@@ -108,7 +111,8 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
     "vocametrix_convert_french_to_ipa",
     "Convert French words or phrases to International Phonetic Alphabet (IPA) transcription. " +
     "Accepts a single string or an array of up to 20 words. " +
-    "Returns IPA transcription per word with optional syllable boundary marks.",
+    "Returns IPA transcription per word with optional syllable boundary marks. " +
+    "French only — passing non-French text will return incorrect phonetic output.",
     {
       input: z.union([
         z.string().min(1).describe("Single French word or phrase"),

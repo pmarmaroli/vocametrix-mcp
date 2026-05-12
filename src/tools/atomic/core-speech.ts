@@ -1,5 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { writeFileSync } from "fs";
+import { join } from "path";
+import { tmpdir } from "os";
+import { randomUUID } from "crypto";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
 import { ok } from "../../utils/mcp.js";
@@ -116,19 +120,28 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
   server.tool(
     "vocametrix_synthesize_speech",
     "Synthesize speech from text using Azure neural text-to-speech. " +
-    "Returns an audio URL and word-level timing data. " +
-    "Supports all Azure Neural voice names for the requested locale.",
+    "Saves the synthesized audio to a temp file and returns the file path. " +
+    "Supports all Azure Neural voice names for the requested locale. " +
+    "BEFORE CALLING: Detect the language of the text. Set speakerLocale to the matching BCP-47 code " +
+    "(e.g. 'es-ES' for Spanish, 'fr-FR' for French, 'de-DE' for German) and set voiceName to a " +
+    "natural neural voice for that locale (e.g. 'es-ES-ElviraNeural', 'fr-FR-DeniseNeural', " +
+    "'de-DE-KatjaNeural'). Do not leave speakerLocale as en-US when the text is not English.",
     {
       text: z.string().min(1).max(1000).describe("Text to synthesize (max 1000 characters)"),
       speakerLocale: locale,
-      voiceName: z.string().optional().describe('Azure Neural voice name, e.g. "en-US-JennyNeural"'),
+      voiceName: z.string().optional().describe('Azure Neural voice name, e.g. "fr-FR-DeniseNeural", "en-US-JennyNeural"'),
     },
     async ({ text, speakerLocale, voiceName }) => {
       try {
-        const body: Record<string, string> = { text, locale: speakerLocale };
-        if (voiceName) body["voiceName"] = voiceName;
-        const result = await client.post("/api/text-to-speech", body);
-        return ok(result);
+        const body: Record<string, string> = { text, language: speakerLocale };
+        if (voiceName) body["voice"] = voiceName;
+        const result = await client.post("/api/text-to-speech", body) as Record<string, unknown>;
+        const audioBase64 = result["audio"] as string | undefined;
+        if (!audioBase64) return ok(result);
+        const format = (result["format"] as string | undefined) ?? "wav";
+        const filePath = join(tmpdir(), `vocametrix-tts-${randomUUID()}.${format}`);
+        writeFileSync(filePath, Buffer.from(audioBase64, "base64"));
+        return ok({ filePath, format, voice: result["voice"], textLength: result["textLength"] });
       } catch (e) { return translateError(e); }
     },
   );
@@ -137,16 +150,22 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
   server.tool(
     "vocametrix_synthesize_speech_with_timing",
     "Synthesize speech via ElevenLabs v2 with per-character timing alignment. " +
-    "Returns audio data and a character-level timing map — useful for lip-sync, subtitles, and karaoke. " +
-    "Supports plain text or SSML markup.",
+    "Saves the synthesized audio to a temp file and returns the file path along with the character-level timing map. " +
+    "Useful for lip-sync, subtitles, and karaoke. Supports plain text or SSML markup.",
     {
       text: z.string().min(1).max(2500).describe("Text or SSML to synthesize (max 2500 characters)"),
       isSSML: z.boolean().optional().default(false).describe("Set true if input is SSML markup"),
     },
     async ({ text, isSSML }) => {
       try {
-        const result = await client.post("/api/text-to-speech-with-timing", { text, isSSML });
-        return ok(result);
+        const result = await client.post("/api/text-to-speech-with-timing", { text, isSSML }) as Record<string, unknown>;
+        const audioBase64 = (result["audio"] ?? result["audio_base64"]) as string | undefined;
+        if (!audioBase64) return ok(result);
+        const format = (result["format"] as string | undefined) ?? "mp3";
+        const filePath = join(tmpdir(), `vocametrix-tts-${randomUUID()}.${format}`);
+        writeFileSync(filePath, Buffer.from(audioBase64, "base64"));
+        const { audio: _a, audio_base64: _b, ...rest } = result;
+        return ok({ filePath, format, ...rest });
       } catch (e) { return translateError(e); }
     },
   );

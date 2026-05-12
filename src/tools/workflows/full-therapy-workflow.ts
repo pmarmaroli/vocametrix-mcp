@@ -9,7 +9,9 @@ export function registerFullTherapyWorkflow(server: McpServer, client: ApiClient
     "End-to-end therapy plan generation with automatic polling and human-in-the-loop approval. " +
     "Generates a therapy plan from session data, polls until complete, and presents it for approval. " +
     "Returns the approved plan or the pending plan awaiting your approval action. " +
-    "After reviewing, call vocametrix_approve_therapy_plan with 'approve', 'modify', or 'reject'.",
+    "After reviewing, call vocametrix_approve_therapy_plan with 'approve', 'modify', or 'reject'. " +
+    "BEFORE CALLING: Confirm that wav2vecOutput comes from vocametrix_extract_egemaps " +
+    "(called with extractWav2Vec=true) — do not pass invented or placeholder data.",
     {
       sessionMetadata: z.record(z.unknown()).describe("Session metadata (must include patient_id)"),
       wav2vecOutput: z.record(z.unknown()).describe("wav2vec embeddings (must include summary_statistics)"),

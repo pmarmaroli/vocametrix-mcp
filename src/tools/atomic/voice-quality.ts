@@ -3,15 +3,10 @@ import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
 import { ok } from "../../utils/mcp.js";
-import { audioPath, gender, age } from "../../schemas/common.js";
+import { audioPath, gender, age, AVQI_VERSION } from "../../schemas/common.js";
 
 export function registerVoiceQualityTools(server: McpServer, client: ApiClient): void {
   // ── AVQI ────────────────────────────────────────────────────────────────────
-  const AVQI_VERSION: Record<string, "v02.03" | "v03.01"> = {
-    en: "v02.03", nl: "v02.03", de: "v02.03",
-    fr: "v03.01", es: "v03.01", it: "v03.01",
-  };
-
   server.tool(
     "vocametrix_calculate_avqi",
     "Calculate the Acoustic Voice Quality Index (AVQI), a clinically validated dysphonia score. " +
