@@ -192,6 +192,63 @@ https://www.vocametrix.com/api-docs
 ## OpenAPI 3.1 spec
 https://www.vocametrix.com/openapi.json`;
 
+const RECORDING_GUIDE = `# Vocametrix Recording Guide
+
+This guide defines the audio recording types required by Vocametrix voice analysis tools.
+Always ensure the user has the correct recording type before calling a tool.
+
+---
+
+## Sustained Vowel (SV)
+
+Say the vowel /a/ continuously at comfortable pitch and volume.
+- No pitch slides or glides
+- No background noise, coughing, or breathing artefacts
+- Minimum duration: 3 seconds
+- Required duration: 5+ seconds for AVQI and ABI
+
+Used by: AVQI, ABI, DSI, CPP, HNR, Jitter/Shimmer, Spectral, Formants, GNE, H1-H2,
+         Voice Dynamics, eGeMAPS
+
+---
+
+## Connected Speech (CS)
+
+The patient reads a language-specific reference sentence aloud at a natural pace.
+This is a phonetically balanced clinical sentence — spontaneous or free speech is NOT valid.
+Minimum duration: 3 seconds of actual speech.
+
+Used by: AVQI (required), ABI (required)
+
+| Language | Code | Reference sentence |
+|---|---|---|
+| English | en | "When the sunlight strikes raindrops in the air, they act like a prism and form a rainbow." |
+| French  | fr | "Quand Renée périt, un chat esseulé grogna fort. À cet instant, Vic sortit contempler le jour naissant." |
+| Dutch   | nl | "De noordenwind en de zon waren erover aan het redetwisten wie de sterkste was van hen beiden." |
+| Spanish | es | "Carmen tiene dos libros grandes. Elena toma doce platos nuevos. Teresa hace siete regalos pequeños." |
+| German  | de | "Der Nordwind und die Sonne stritten sich einmal, wer von ihnen beiden wohl der Stärkere wäre, als ein Wanderer, der in einen warmen Mantel gehüllt war, des Weges daherkam." |
+| Italian | it | "Si bisticciavano un giorno il vento della tramontana e il sole, l'uno pretendendo d'esser più forte dell'altro." |
+
+---
+
+## Glissando
+
+Slide continuously from the lowest to the highest comfortable pitch on any vowel, without stopping.
+Duration: 5–10 seconds.
+
+Used by: Voice Range Profile (VRP / Ambitus)
+
+---
+
+## Sustained /s/ and /z/
+
+Two SEPARATE recordings:
+1. Sustained /s/ — voiceless hissing sound (like a snake), 3–5 seconds
+2. Sustained /z/ — voiced buzzing sound (like a bee), 3–5 seconds
+
+Used by: S/Z Ratio
+`;
+
 export function registerResources(server: McpServer): void {
   // Static API docs resource
   server.resource(
@@ -203,6 +260,20 @@ export function registerResources(server: McpServer): void {
         uri: uri.href,
         mimeType: "text/plain",
         text: API_DOCS,
+      }],
+    }),
+  );
+
+  // Recording guide resource
+  server.resource(
+    "recording-guide",
+    "vocametrix://recording-guide",
+    { description: "Recording protocols for all Vocametrix voice analysis tools: sustained vowel, connected speech (with language-specific sentences), glissando, and S/Z recordings" },
+    async (uri) => ({
+      contents: [{
+        uri: uri.href,
+        mimeType: "text/plain",
+        text: RECORDING_GUIDE,
       }],
     }),
   );
