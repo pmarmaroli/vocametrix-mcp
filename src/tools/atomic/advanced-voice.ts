@@ -134,12 +134,18 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "vocametrix_calculate_abi",
     "Calculate the Acoustic Breathiness Index (ABI) combining connected speech and sustained vowel. " +
     "ABI aggregates CPPS, jitter, GNE approximation, HNR (6 kHz), H1-H2, shimmer, and period SD. " +
-    "Sensitive to the full spectrum from breathy to pressed phonation.",
+    "Sensitive to the full spectrum from breathy to pressed phonation. " +
+    "BEFORE CALLING: (1) Ask for or infer the patient language (en/fr/nl/es/de/it). " +
+    "(2) Show the user the correct connected speech sentence for that language " +
+    "(read vocametrix://recording-guide to get it) and ask them to record it. " +
+    "(3) Confirm they also have a sustained /a/ vowel recording of 5+ s. " +
+    "Only call once both recordings are confirmed ready.",
     {
-      connectedSpeechPath: audioPath.describe("Connected speech WAV file"),
-      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file"),
+      connectedSpeechPath: audioPath.describe("Connected speech WAV file — patient reads the language-specific reference sentence (see vocametrix://recording-guide)"),
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (5+ s)"),
+      language: z.enum(["en", "fr", "nl", "es", "de", "it"]).describe("Patient language — determines the correct connected speech reference sentence"),
     },
-    async ({ connectedSpeechPath, sustainedVowelPath }) => {
+    async ({ connectedSpeechPath, sustainedVowelPath, language: _language }) => {
       try {
         const csId = await client.uploadFileId(connectedSpeechPath);
         const svId = await client.uploadFileId(sustainedVowelPath);
