@@ -2,11 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
+import { ok } from "../../utils/mcp.js";
 import { audioPath, locale } from "../../schemas/common.js";
-
-function ok(data: unknown): { content: [{ type: "text"; text: string }] } {
-  return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-}
 
 export function registerCoreSpeechTools(server: McpServer, client: ApiClient): void {
   // ── Pronunciation Assessment ─────────────────────────────────────────────────
@@ -78,11 +75,11 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
         }) as { transcriptionId: string };
 
         const transcriptionId = submitResult.transcriptionId;
-        const sseUrl = `https://platform.vocametrix.com/api/transcription-progress/${transcriptionId}?apiKey=${client.apiKey}`;
+        const sseUrl = `https://platform.vocametrix.com/api/transcription-progress/${transcriptionId}`;
 
-        const resp = await fetch(sseUrl);
+        const resp = await fetch(sseUrl, { headers: { "X-API-Key": client.apiKey } });
         if (!resp.ok || !resp.body) {
-          return ok({ transcriptionId, status: "submitted", message: "Poll SSE at: " + sseUrl });
+          return ok({ transcriptionId, status: "submitted", message: "Transcription submitted. Poll status with transcriptionId: " + transcriptionId });
         }
 
         const reader = resp.body.getReader();

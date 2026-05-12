@@ -2,11 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
+import { ok } from "../../utils/mcp.js";
 import { audioPath } from "../../schemas/common.js";
-
-function ok(data: unknown): { content: [{ type: "text"; text: string }] } {
-  return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-}
 
 export function registerAudioMeasureTools(server: McpServer, client: ApiClient): void {
   // ── Sound Level ──────────────────────────────────────────────────────────────

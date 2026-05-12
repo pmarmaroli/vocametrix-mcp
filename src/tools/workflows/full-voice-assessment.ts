@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
+import { ok } from "../../utils/mcp.js";
 import { age, gender } from "../../schemas/common.js";
 
 export function registerFullVoiceAssessment(server: McpServer, client: ApiClient): void {
@@ -48,7 +49,7 @@ export function registerFullVoiceAssessment(server: McpServer, client: ApiClient
           spectral,
         };
 
-        return { content: [{ type: "text" as const, text: JSON.stringify(report, null, 2) }] };
+        return ok(report);
       } catch (e) { return translateError(e); }
     },
   );

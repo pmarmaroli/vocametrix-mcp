@@ -2,10 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-
-function ok(data: unknown): { content: [{ type: "text"; text: string }] } {
-  return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-}
+import { ok } from "../../utils/mcp.js";
 
 export function registerTherapyTools(server: McpServer, client: ApiClient): void {
   // ── Generate Therapy Plan ────────────────────────────────────────────────────

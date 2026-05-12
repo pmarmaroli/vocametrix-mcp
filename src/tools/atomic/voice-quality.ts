@@ -2,12 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
+import { ok } from "../../utils/mcp.js";
 import { audioPath, gender, age } from "../../schemas/common.js";
-
-function ok(data: unknown): { content: [{ type: "text"; text: string }] } {
-  const text = typeof data === "string" ? data : JSON.stringify(data, null, 2);
-  return { content: [{ type: "text", text }] };
-}
 
 export function registerVoiceQualityTools(server: McpServer, client: ApiClient): void {
   // ── AVQI ────────────────────────────────────────────────────────────────────

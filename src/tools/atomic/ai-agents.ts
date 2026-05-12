@@ -2,11 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-
-function ok(data: unknown): { content: [{ type: "text"; text: string }] } {
-  const text = typeof data === "object" ? JSON.stringify(data, null, 2) : String(data);
-  return { content: [{ type: "text", text }] };
-}
+import { ok } from "../../utils/mcp.js";
 
 export function registerAiAgentTools(server: McpServer, client: ApiClient): void {
   // ── Interpret Voice Metrics ──────────────────────────────────────────────────

@@ -2,11 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
+import { ok } from "../../utils/mcp.js";
 import { audioPath, gender, age } from "../../schemas/common.js";
-
-function ok(data: unknown): { content: [{ type: "text"; text: string }] } {
-  return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-}
 
 export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient): void {
   // ── Spectral Advanced ────────────────────────────────────────────────────────
@@ -69,7 +66,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
       sFilePath: audioPath.describe("Recording of sustained /s/ phonation (voiceless)"),
       zFilePath: audioPath.describe("Recording of sustained /z/ phonation (voiced)"),
       patientAge: age,
-      patientGender: z.enum(["male", "female"]).default("male"),
+      patientGender: gender.default("1"),
       clinicalContext: z
         .enum(["screening", "therapy", "neurological", "post-surgical"])
         .optional()
@@ -118,7 +115,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "negative values indicate pressed/tense voice. Normal range: −2 to +2 dB.",
     {
       sustainedVowelPath: audioPath,
-      patientGender: z.enum(["male", "female", "other"]).default("male"),
+      patientGender: gender.default("1"),
     },
     async ({ sustainedVowelPath, patientGender }) => {
       try {
@@ -164,7 +161,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     {
       sustainedVowelPath: audioPath,
       patientAge: age,
-      patientGender: z.enum(["male", "female", "other"]).default("male"),
+      patientGender: gender.default("1"),
     },
     async ({ sustainedVowelPath, patientAge, patientGender }) => {
       try {
