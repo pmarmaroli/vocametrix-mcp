@@ -53,17 +53,21 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
   // ── Phoneme Detection ────────────────────────────────────────────────────────
   server.tool(
     "vocametrix_detect_phonemes",
-    "Detect phonemes in an audio recording using a deep-learning classifier. " +
-    "Returns phoneme labels with confidence scores. " +
-    "Currently supports French (fr) and Estonian (et) phoneme inventories.",
+    "Detect French phonemes in an audio recording using a deep-learning classifier. " +
+    "Returns phoneme labels with confidence scores and timestamps. French only. " +
+    "By default uses the baseline model; pass model='logatome-champion' to use the " +
+    "logatome-trained classifier (better accuracy on logatome-type utterances used in speech therapy).",
     {
       audioPath: audioPath,
-      language: z.enum(["fr", "et"]).default("fr").describe("Phoneme inventory language: fr = French, et = Estonian"),
+      model: z.literal("logatome-champion").optional()
+        .describe("Optional: pass 'logatome-champion' to use the logatome-trained classifier instead of the baseline"),
     },
-    async ({ audioPath: path, language }) => {
+    async ({ audioPath: path, model }) => {
       try {
         const fileId = await client.uploadFileId(path);
-        const result = await client.post("/api/classify-phoneme", { fileId, language });
+        const body: Record<string, unknown> = { fileId, language: "fr-FR" };
+        if (model) body["model"] = model;
+        const result = await client.post("/api/analyze-phonemes-live", body);
         return ok(result);
       } catch (e) { return translateError(e); }
     },
