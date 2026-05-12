@@ -69,7 +69,10 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "vocametrix_calculate_sz_ratio",
     "Calculate the S/Z phonation ratio (duration of sustained /s/ vs /z/). " +
     "Normal ratio ≈ 1.0. Ratio > 1.4 suggests vocal fold pathology (the /z/ is shorter). " +
-    "Requires two separate recordings: one of sustained /s/ and one of sustained /z/.",
+    "Requires two separate recordings: one of sustained /s/ and one of sustained /z/. " +
+    "BEFORE CALLING: Confirm the user has TWO separate recordings — " +
+    "one of sustained /s/ (voiceless hiss, like a snake) and one of /z/ (voiced buzz, like a bee), " +
+    "each 3–5 s. If not, explain the difference between them and ask the user to record both.",
     {
       sFilePath: audioPath.describe("Recording of sustained /s/ phonation (voiceless)"),
       zFilePath: audioPath.describe("Recording of sustained /z/ phonation (voiced)"),

@@ -74,7 +74,10 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
     "vocametrix_classify_stuttering",
     "Classify stuttering disfluency patterns in a speech recording (async, ~30–120 seconds). " +
     "Returns disfluency types (repetitions, prolongations, blocks), severity score, and fluency rate. " +
-    "The tool polls the result automatically — no separate status call needed.",
+    "The tool polls the result automatically — no separate status call needed. " +
+    "BEFORE CALLING: Confirm the user has a natural connected speech recording " +
+    "(the patient speaking spontaneously or reading aloud). " +
+    "A sustained vowel is not appropriate here — the recording must contain running speech.",
     {
       audioPath: audioPath,
       pollIntervalMs: z.number().int().min(1000).max(30000).default(5000)

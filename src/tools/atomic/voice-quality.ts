@@ -156,7 +156,10 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "vocametrix_calculate_voice_range_profile",
     "Calculate the Voice Range Profile (VRP / ambitus / glissando) from a glissando recording. " +
     "Returns frequency range (lowest to highest pitch) and intensity range with age/gender interpretation. " +
-    "Useful for singers and voice rehabilitation assessment.",
+    "Useful for singers and voice rehabilitation assessment. " +
+    "BEFORE CALLING: Confirm the user has a glissando recording — a continuous pitch sweep " +
+    "from their lowest to highest comfortable pitch on any vowel, without stopping (5–10 s). " +
+    "If not, explain what a glissando is and ask them to record one.",
     {
       glissandoPath: audioPath.describe("Glissando (pitch sweep) WAV recording"),
       patientAge: age.default(30),
@@ -180,7 +183,10 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "vocametrix_calculate_prosody_similarity",
     "Compare prosodic patterns between a model (reference) recording and a learner recording. " +
     "Returns similarity scores for pitch contour, intensity, duration, and pause patterns. " +
-    "Useful for accent coaching, speech imitation training, and L2 pronunciation.",
+    "Useful for accent coaching, speech imitation training, and L2 pronunciation. " +
+    "BEFORE CALLING: Confirm the user has TWO recordings — a model (reference/teacher) " +
+    "recording and a learner recording of the same passage, both as natural speech WAV files. " +
+    "If not, ask the user to provide or record both before proceeding.",
     {
       modelPath: audioPath.describe("Model (reference/teacher) WAV recording"),
       learnerPath: audioPath.describe("Learner (student) WAV recording to compare"),
