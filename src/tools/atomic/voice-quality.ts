@@ -7,25 +7,37 @@ import { audioPath, gender, age } from "../../schemas/common.js";
 
 export function registerVoiceQualityTools(server: McpServer, client: ApiClient): void {
   // ── AVQI ────────────────────────────────────────────────────────────────────
+  const AVQI_VERSION: Record<string, "v02.03" | "v03.01"> = {
+    en: "v02.03", nl: "v02.03", de: "v02.03",
+    fr: "v03.01", es: "v03.01", it: "v03.01",
+  };
+
   server.tool(
     "vocametrix_calculate_avqi",
-    "Calculate the Acoustic Voice Quality Index (AVQI v2.03 or v3.01), a clinically validated dysphonia score. " +
-    "AVQI > 2.43 (French) / 2.97 (English) indicates dysphonia. " +
-    "Requires a sustained vowel recording (e.g. /a/ held for 3+ seconds). " +
-    "Connected speech is optional but improves accuracy.",
+    "Calculate the Acoustic Voice Quality Index (AVQI), a clinically validated dysphonia score. " +
+    "AVQI combines acoustic parameters from a sustained vowel AND connected speech (concatenated). " +
+    "AVQI version is chosen automatically from the patient language (en/nl/de → v02.03; fr/es/it → v03.01). " +
+    "Dysphonia thresholds: > 2.43 (French/Dutch) / > 2.97 (English). " +
+    "BEFORE CALLING: (1) Ask for or infer the patient language (en/fr/nl/es/de/it). " +
+    "(2) Show the user the correct connected speech sentence for that language " +
+    "(read vocametrix://recording-guide to get it) and ask them to record it. " +
+    "(3) Confirm they also have a sustained /a/ vowel recording of 5+ s. " +
+    "Only call once both recordings are confirmed ready.",
     {
-      sustainedVowelPath: audioPath.describe("Sustained vowel WAV file (e.g. /a/ held 3+ s)"),
-      connectedSpeechPath: audioPath.optional().describe("Connected speech WAV file (optional, improves AVQI accuracy)"),
-      version: z.enum(["v02.03", "v03.01"]).default("v03.01").describe("AVQI algorithm version"),
+      sustainedVowelPath: audioPath.describe("Sustained vowel WAV file (/a/ held 5+ s)"),
+      connectedSpeechPath: audioPath.describe("Connected speech WAV file — patient reads the language-specific reference sentence (see vocametrix://recording-guide)"),
+      language: z.enum(["en", "fr", "nl", "es", "de", "it"]).describe("Patient language — determines AVQI version and the reference sentence for connected speech"),
     },
-    async ({ sustainedVowelPath, connectedSpeechPath, version }) => {
+    async ({ sustainedVowelPath, connectedSpeechPath, language }) => {
       try {
         const svId = await client.uploadFileId(sustainedVowelPath);
-        const params: Record<string, string> = { svFileId: svId, version };
-        if (connectedSpeechPath) {
-          params["csFileId"] = await client.uploadFileId(connectedSpeechPath);
-        }
-        const result = await client.get("/api/calculate-avqi", params);
+        const csId = await client.uploadFileId(connectedSpeechPath);
+        const version = AVQI_VERSION[language] ?? "v03.01";
+        const result = await client.get("/api/calculate-avqi", {
+          svFileId: svId,
+          csFileId: csId,
+          version,
+        });
         return ok(result);
       } catch (e) { return translateError(e); }
     },
