@@ -120,7 +120,8 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
   server.tool(
     "vocametrix_synthesize_speech",
     "Synthesize speech from text using Azure neural text-to-speech. " +
-    "Saves the synthesized audio to a temp file and returns the file path. " +
+    "Returns filePath (saved WAV file) and dataUrl (data URI for immediate audio playback). " +
+    "Use dataUrl as the src of an HTML audio element to let the user play the audio. " +
     "Supports all Azure Neural voice names for the requested locale. " +
     "BEFORE CALLING: Detect the language of the text. Set speakerLocale to the matching BCP-47 code " +
     "(e.g. 'es-ES' for Spanish, 'fr-FR' for French, 'de-DE' for German) and set voiceName to a " +
@@ -141,32 +142,11 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
         const format = (result["format"] as string | undefined) ?? "wav";
         const filePath = join(tmpdir(), `vocametrix-tts-${randomUUID()}.${format}`);
         writeFileSync(filePath, Buffer.from(audioBase64, "base64"));
-        return ok({ filePath, format, voice: result["voice"], textLength: result["textLength"] });
+        const mimeType = format === "mp3" ? "audio/mpeg" : "audio/wav";
+        const dataUrl = `data:${mimeType};base64,${audioBase64}`;
+        return ok({ filePath, dataUrl, format, voice: result["voice"], textLength: result["textLength"] });
       } catch (e) { return translateError(e); }
     },
   );
 
-  // ── TTS with timing ──────────────────────────────────────────────────────────
-  server.tool(
-    "vocametrix_synthesize_speech_with_timing",
-    "Synthesize speech via ElevenLabs v2 with per-character timing alignment. " +
-    "Saves the synthesized audio to a temp file and returns the file path along with the character-level timing map. " +
-    "Useful for lip-sync, subtitles, and karaoke. Supports plain text or SSML markup.",
-    {
-      text: z.string().min(1).max(2500).describe("Text or SSML to synthesize (max 2500 characters)"),
-      isSSML: z.boolean().optional().default(false).describe("Set true if input is SSML markup"),
-    },
-    async ({ text, isSSML }) => {
-      try {
-        const result = await client.post("/api/text-to-speech-with-timing", { text, isSSML }) as Record<string, unknown>;
-        const audioBase64 = (result["audio"] ?? result["audio_base64"]) as string | undefined;
-        if (!audioBase64) return ok(result);
-        const format = (result["format"] as string | undefined) ?? "mp3";
-        const filePath = join(tmpdir(), `vocametrix-tts-${randomUUID()}.${format}`);
-        writeFileSync(filePath, Buffer.from(audioBase64, "base64"));
-        const { audio: _a, audio_base64: _b, ...rest } = result;
-        return ok({ filePath, format, ...rest });
-      } catch (e) { return translateError(e); }
-    },
-  );
 }
