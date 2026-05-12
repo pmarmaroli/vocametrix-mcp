@@ -48,7 +48,11 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "vocametrix_calculate_dsi",
     "Calculate the Dysphonia Severity Index (DSI). " +
     "DSI > 1.6 = normal voice; DSI < –1.6 = severe dysphonia. " +
-    "Requires a sustained vowel WAV file plus voice-range parameters (MPT, F0 range, minimum intensity).",
+    "Requires a sustained vowel WAV file plus voice-range parameters (MPT, F0 range, minimum intensity). " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath.describe("Sustained vowel WAV file"),
       mpt: z.number().positive().describe("Maximum Phonation Time in seconds"),
@@ -80,7 +84,11 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "vocametrix_calculate_cpp",
     "Calculate Cepstral Peak Prominence (CPP) from a sustained vowel. " +
     "Higher CPP = better voice quality. Typical normal CPP: 20–28 dB. " +
-    "Clinically sensitive to breathiness and hoarseness.",
+    "Clinically sensitive to breathiness and hoarseness. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
     },
@@ -98,7 +106,11 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "vocametrix_calculate_hnr",
     "Calculate multi-band Harmonics-to-Noise Ratio (HNR) across frequency bands (80–8000 Hz) " +
     "with age- and gender-specific norms. Higher HNR = cleaner voice. " +
-    "Normal HNR (500 Hz band): > 20 dB. Requires a sustained vowel.",
+    "Normal HNR (500 Hz band): > 20 dB. Requires a sustained vowel. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
       patientAge: age,
@@ -122,7 +134,11 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "vocametrix_calculate_jitter_shimmer",
     "Calculate jitter (period perturbation, PPQ5) and shimmer (amplitude perturbation) from a sustained vowel. " +
     "Normal jitter < 1.04%; normal shimmer < 3.81 dB. " +
-    "Elevated values indicate irregular vibration — associated with dysphonia.",
+    "Elevated values indicate irregular vibration — associated with dysphonia. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
     },

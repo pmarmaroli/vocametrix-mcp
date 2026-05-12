@@ -31,9 +31,13 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
   // ── eGeMAPS ─────────────────────────────────────────────────────────────────
   server.tool(
     "vocametrix_extract_egemaps",
-    "Extract the full openSMILE eGeMAPSv02 feature set (88 acoustic features) from an audio file. " +
+    "Extract the full openSMILE eGeMAPSv02 feature set (88 acoustic features) from a sustained vowel. " +
     "Features include F0, jitter, shimmer, HNR, MFCCs, formants, spectral flux, and loudness. " +
-    "Commonly used as input to machine-learning voice pathology classifiers.",
+    "Commonly used as input to machine-learning voice pathology classifiers. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       audioPath: audioPath,
     },

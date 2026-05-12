@@ -11,7 +11,11 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "vocametrix_calculate_spectral",
     "Extract advanced spectral measures from a sustained vowel: center of gravity, skewness/kurtosis, " +
     "H1-H2 (breathiness indicator), H1-A1, H1-A3, LTAS slope and tilt, alpha ratio. " +
-    "Returns age/gender-normalized norms and voice pattern classification.",
+    "Returns age/gender-normalized norms and voice pattern classification. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
       patientAge: age,
@@ -37,7 +41,11 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "vocametrix_calculate_formants",
     "Compute F1–F4 formant statistics (mean, SD, range, CV, IQR) from a sustained vowel " +
     "with vowel-space stability and articulatory precision scores. " +
-    "Useful for dysarthria assessment, vowel space analysis, and cleft palate evaluation.",
+    "Useful for dysarthria assessment, vowel space analysis, and cleft palate evaluation. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
       patientAge: age,
@@ -94,7 +102,11 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "vocametrix_calculate_gne",
     "Calculate the Glottal-to-Noise Excitation (GNE) ratio from a sustained vowel. " +
     "GNE ranges 0–1; values < 0.5 suggest increased noise (breathiness/hoarseness). " +
-    "Computed via native Praat algorithm for clinical reliability.",
+    "Computed via native Praat algorithm for clinical reliability. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
     },
@@ -112,7 +124,11 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "vocametrix_calculate_h1_h2",
     "Calculate the formant-corrected H1*–H2* voice source measure from a sustained vowel. " +
     "H1*–H2* is sensitive to breathiness: positive values indicate breathy voice, " +
-    "negative values indicate pressed/tense voice. Normal range: −2 to +2 dB.",
+    "negative values indicate pressed/tense voice. Normal range: −2 to +2 dB. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
       patientGender: gender.default("1"),
@@ -163,7 +179,11 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "vocametrix_calculate_voice_dynamics",
     "Compute intensity dynamics, pitch-intensity correlation, and composite scores for " +
     "voice control, projection, stability, effort, and monotonicity. " +
-    "Useful for voice training, public speaking coaching, and vocal fatigue assessment.",
+    "Useful for voice training, public speaking coaching, and vocal fatigue assessment. " +
+    "BEFORE CALLING: Confirm the user has a sustained vowel recording " +
+    "(/a/ held at comfortable pitch for 3+ s, minimal background noise). " +
+    "If not, explain what it is and ask them to record one. " +
+    "Do not pass connected speech or conversational audio.",
     {
       sustainedVowelPath: audioPath,
       patientAge: age,
