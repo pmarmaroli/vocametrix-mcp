@@ -26,8 +26,15 @@ function createDummyClient(): ReturnType<typeof createClient> {
   return { sdk: null as never, apiKey: "", uploadFileId: missing, uploadBlobUrl: missing, get: missing, post: missing };
 }
 
+function extractKeyFromUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  const q = url.indexOf("?");
+  if (q === -1) return undefined;
+  return new URLSearchParams(url.slice(q + 1)).get("key") ?? undefined;
+}
+
 async function handleMcpRequest(req: IncomingMessage, res: ServerResponse) {
-  const apiKey = req.headers["x-api-key"] as string | undefined;
+  const apiKey = (req.headers["x-api-key"] as string | undefined) ?? extractKeyFromUrl(req.url);
   let client: ReturnType<typeof createClient>;
   try {
     client = createClient(apiKey);
