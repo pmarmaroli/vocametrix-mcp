@@ -17,10 +17,10 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
       patientAge: age,
       patientGender: gender,
-      version: z.string().optional().default("v01"),
+      version: z.string().optional().default("v01").describe("Algorithm version (default: 'v01')"),
     },
     async ({ sustainedVowelPath, patientAge, patientGender, version }) => {
       try {
@@ -47,7 +47,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
       patientAge: age,
       patientGender: gender,
     },
@@ -111,7 +111,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
     },
     async ({ sustainedVowelPath }) => {
       try {
@@ -133,7 +133,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
       patientGender: gender.default("1"),
     },
     async ({ sustainedVowelPath, patientGender }) => {
@@ -188,7 +188,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
       patientAge: age,
       patientGender: gender.default("1"),
     },

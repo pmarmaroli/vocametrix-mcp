@@ -16,8 +16,8 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
     "Do not invent or estimate values — passing arbitrary numbers produces misleading clinical output.",
     {
       metrics: z.record(z.unknown()).describe("Voice metrics object (e.g. { jitter: 1.2, shimmer: 3.5, hnr: 18.0 })"),
-      patientAge: z.number().int().min(0).max(120),
-      patientGender: z.enum(["male", "female", "other"]).default("male"),
+      patientAge: z.number().int().min(0).max(120).describe("Patient age in years (0–120)"),
+      patientGender: z.enum(["male", "female", "other"]).default("male").describe("Patient biological sex for norm reference"),
       languageCode: z.string().optional().default("en").describe("Language for the report (en, fr, etc.)"),
     },
     async ({ metrics, patientAge, patientGender, languageCode }) => {
@@ -64,7 +64,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
     "Useful for articulation therapy, phonological awareness drills, and accent training.",
     {
       language: z.string().describe("Language for word list (e.g. 'en', 'fr', 'es', 'et')"),
-      patientAge: z.number().int().min(0).max(120),
+      patientAge: z.number().int().min(0).max(120).describe("Patient age in years — used to select age-appropriate vocabulary"),
       targetSound: z.object({
         symbol: z.string().describe("IPA or orthographic symbol (e.g. 'r', 'θ', 's')"),
         position: z.enum(["initial", "medial", "final"]).describe("Position of the sound in words"),
@@ -118,7 +118,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         z.string().min(1).describe("Single French word or phrase"),
         z.array(z.string()).max(20).describe("Array of up to 20 French words"),
       ]),
-      includeSyllableMarks: z.boolean().optional().default(false),
+      includeSyllableMarks: z.boolean().optional().default(false).describe("If true, adds syllable boundary marks (·) to the IPA output"),
     },
     async ({ input, includeSyllableMarks }) => {
       try {

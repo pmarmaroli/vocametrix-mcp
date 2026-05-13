@@ -55,7 +55,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
       minimumIntensity: z.number().describe("Softest intensity in dB SPL"),
       patientAge: age,
       patientGender: gender,
-      version: z.string().optional().default("v01"),
+      version: z.string().optional().default("v01").describe("Algorithm version (default: 'v01')"),
     },
     async ({ sustainedVowelPath, mpt, maximumF0, minimumIntensity, patientAge, patientGender, version }) => {
       try {
@@ -85,7 +85,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
     },
     async ({ sustainedVowelPath }) => {
       try {
@@ -107,7 +107,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
       patientAge: age,
       patientGender: gender,
     },
@@ -135,7 +135,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
     "If not, explain what it is and ask them to record one. " +
     "Do not pass connected speech or conversational audio.",
     {
-      sustainedVowelPath: audioPath,
+      sustainedVowelPath: audioPath.describe("Sustained vowel /a/ WAV file (/a/ held 3+ s at comfortable pitch)"),
     },
     async ({ sustainedVowelPath }) => {
       try {
