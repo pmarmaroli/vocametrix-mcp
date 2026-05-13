@@ -1,5 +1,7 @@
 # @vocametrix/mcp-server
 
+[![smithery badge](https://smithery.ai/badge/patrick-marmaroli/vocametrix)](https://smithery.ai/servers/patrick-marmaroli/vocametrix)
+
 Official [Model Context Protocol](https://modelcontextprotocol.io) server for the [Vocametrix](https://www.vocametrix.com) voice analysis API.
 
 Gives any MCP-compatible AI assistant (Claude Desktop, Cursor, Cline, etc.) direct access to clinical voice metrics, pronunciation assessment, speech transcription, and AI-powered therapy planning.
