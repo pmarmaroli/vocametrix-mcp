@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL, STATEFUL_TOOL } from "../../utils/mcp.js";
 
 export function registerAiAgentTools(server: McpServer, client: ApiClient): void {
   // ── Interpret Voice Metrics ──────────────────────────────────────────────────
@@ -20,6 +20,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
       patientGender: z.enum(["male", "female", "other"]).default("male").describe("Patient biological sex for norm reference"),
       languageCode: z.string().optional().default("en").describe("Language for the report (en, fr, etc.)"),
     },
+    READONLY_TOOL,
     async ({ metrics, patientAge, patientGender, languageCode }) => {
       try {
         const result = await client.post("/api/voice-metrics-interpreter", {
@@ -44,6 +45,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
       speechChallenge: z.string().describe("Target speech challenge (e.g. 'stuttering', 'aphonia', 'dysarthria', 'articulation')"),
       language: z.string().default("en").describe("Exercise language (e.g. 'en', 'fr', 'es')"),
     },
+    READONLY_TOOL,
     async ({ message, ageLevel, speechChallenge, language }) => {
       try {
         const result = await client.post("/api/speech-exercise-generator", {
@@ -70,6 +72,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         position: z.enum(["initial", "medial", "final"]).describe("Position of the sound in words"),
       }),
     },
+    READONLY_TOOL,
     async ({ language, patientAge, targetSound }) => {
       try {
         const result = await client.post("/api/word-list-generator", {
@@ -94,6 +97,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
       accountType: z.enum(["slt", "patient", "parent"]).describe("Your role: slt = speech-language therapist, patient, parent (caregiver)"),
       threadId: z.string().describe("Conversation thread ID. Use a UUID; reuse the same ID to continue a conversation"),
     },
+    STATEFUL_TOOL,
     async ({ message, accountType, threadId }) => {
       try {
         const result = await client.post("/api/speech-therapist-assistant", {
@@ -120,6 +124,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
       ]),
       includeSyllableMarks: z.boolean().optional().default(false).describe("If true, adds syllable boundary marks (·) to the IPA output"),
     },
+    READONLY_TOOL,
     async ({ input, includeSyllableMarks }) => {
       try {
         const result = await client.post("/api/french-to-ipa-agent", {
@@ -142,6 +147,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
       targetWord: z.string().min(1).describe("The correct target word"),
       language: z.string().default("en-US").describe("Language code (e.g. en-US, fr-FR)"),
     },
+    READONLY_TOOL,
     async ({ transcription, targetWord, language }) => {
       try {
         const result = await client.post("/api/spell-agent", {
@@ -164,6 +170,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
       text: z.string().min(1).max(5000).describe("Text to analyze (max 5000 characters)"),
       locale: z.string().describe("Language code (e.g. en-US, fr-FR)"),
     },
+    READONLY_TOOL,
     async ({ text, locale }) => {
       try {
         const result = await client.post("/api/syntax-checker-agent", { text, locale });
@@ -185,6 +192,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
       topic: z.string().describe("Vocabulary topic (e.g. 'animals', 'food', 'body parts')"),
       threadId: z.string().optional().describe("Conversation thread ID for multi-turn sessions"),
     },
+    STATEFUL_TOOL,
     async ({ message, nativeLanguage, targetLanguage, ageGroup, topic, threadId }) => {
       try {
         const body: Record<string, unknown> = { message, nativeLanguage, targetLanguage, ageGroup, topic };
@@ -206,6 +214,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         .describe("Learning profile to adapt for"),
       includeTips: z.boolean().optional().default(true).describe("Include therapist tips in output"),
     },
+    READONLY_TOOL,
     async ({ exerciseText, learnerProfile, includeTips }) => {
       try {
         const result = await client.post("/api/adaptive-exercise-agent", {

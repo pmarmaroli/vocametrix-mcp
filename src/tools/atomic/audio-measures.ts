@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL } from "../../utils/mcp.js";
 import { audioPath } from "../../schemas/common.js";
 
 export function registerAudioMeasureTools(server: McpServer, client: ApiClient): void {
@@ -17,6 +17,7 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
       startSec: z.number().min(0.001).default(0.001).describe("Start time in seconds (minimum 0.001)"),
       endSec: z.number().positive().optional().describe("End time in seconds (defaults to end of file)"),
     },
+    READONLY_TOOL,
     async ({ audioPath: path, startSec, endSec }) => {
       try {
         const blobURL = await client.uploadBlobUrl(path);
@@ -41,6 +42,7 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
     {
       audioPath: audioPath,
     },
+    READONLY_TOOL,
     async ({ audioPath: path }) => {
       try {
         const fileId = await client.uploadFileId(path);
@@ -62,6 +64,7 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
       model: z.literal("logatome-champion").optional()
         .describe("Optional: pass 'logatome-champion' to use the logatome-trained classifier instead of the baseline"),
     },
+    READONLY_TOOL,
     async ({ audioPath: path, model }) => {
       try {
         const fileId = await client.uploadFileId(path);
@@ -89,6 +92,7 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
       timeoutMs: z.number().int().min(10000).max(900000).default(620000)
         .describe("Maximum wait time in ms before giving up (default 620000 = ~10 min)"),
     },
+    READONLY_TOOL,
     async ({ audioPath: path, pollIntervalMs, timeoutMs }) => {
       try {
         const fileId = await client.uploadFileId(path);

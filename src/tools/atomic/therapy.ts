@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL, STATEFUL_TOOL, DESTRUCTIVE_TOOL } from "../../utils/mcp.js";
 
 export function registerTherapyTools(server: McpServer, client: ApiClient): void {
   // ── Generate Therapy Plan ────────────────────────────────────────────────────
@@ -19,6 +19,7 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
       wav2vecOutput: z.record(z.unknown()).describe("wav2vec embeddings output (must include summary_statistics)"),
       patientAnamnesis: z.string().optional().describe("Demographics, clinical history, and therapy background"),
     },
+    STATEFUL_TOOL,
     async ({ sessionMetadata, wav2vecOutput, patientAnamnesis }) => {
       try {
         const body: Record<string, unknown> = {
@@ -41,6 +42,7 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
     {
       sessionId: z.string().min(1).describe("Session ID returned by vocametrix_generate_therapy_plan or vocametrix_classify_stuttering"),
     },
+    READONLY_TOOL,
     async ({ sessionId }) => {
       try {
         const result = await client.get(`/api/therapy-status/${sessionId}`);
@@ -58,6 +60,7 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
     {
       sessionId: z.string().min(1).describe("Session ID from vocametrix_generate_therapy_plan"),
     },
+    READONLY_TOOL,
     async ({ sessionId }) => {
       try {
         const result = await client.get(`/api/therapy-result/${sessionId}`);
@@ -78,6 +81,7 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
       action: z.enum(["approve", "modify", "reject"]).describe("Approval decision"),
       feedback: z.string().optional().describe("Required when action = 'modify': describe the changes needed"),
     },
+    DESTRUCTIVE_TOOL,
     async ({ sessionId, action, feedback }) => {
       try {
         const body: Record<string, string> = { action };

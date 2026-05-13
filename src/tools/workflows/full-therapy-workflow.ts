@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
+import { STATEFUL_TOOL } from "../../utils/mcp.js";
 
 export function registerFullTherapyWorkflow(server: McpServer, client: ApiClient): void {
   server.tool(
@@ -19,6 +20,7 @@ export function registerFullTherapyWorkflow(server: McpServer, client: ApiClient
       pollIntervalMs: z.number().int().min(2000).default(5000).describe("Polling interval in ms"),
       timeoutMs: z.number().int().default(120000).describe("Max wait time in ms"),
     },
+    STATEFUL_TOOL,
     async ({ sessionMetadata, wav2vecOutput, patientAnamnesis, pollIntervalMs, timeoutMs }) => {
       try {
         const body: Record<string, unknown> = {

@@ -4,6 +4,7 @@ import { readdirSync } from "fs";
 import { join, extname } from "path";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
+import { READONLY_TOOL } from "../../utils/mcp.js";
 
 interface PronunciationRow {
   file: string;
@@ -26,6 +27,7 @@ export function registerBatchPronunciation(server: McpServer, client: ApiClient)
       referenceText: z.string().min(1).describe("The text all speakers were reading aloud"),
       locale: z.string().default("en-US").describe("BCP-47 locale code"),
     },
+    READONLY_TOOL,
     async ({ folderPath, referenceText, locale }) => {
       try {
         const files = readdirSync(folderPath).filter(f => extname(f).toLowerCase() === ".wav");

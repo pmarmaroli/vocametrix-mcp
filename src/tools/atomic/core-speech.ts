@@ -6,7 +6,7 @@ import { tmpdir } from "os";
 import { randomUUID } from "crypto";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL } from "../../utils/mcp.js";
 import { audioPath, locale } from "../../schemas/common.js";
 
 export function registerCoreSpeechTools(server: McpServer, client: ApiClient): void {
@@ -22,6 +22,7 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
       referenceText: z.string().min(1).describe("The text the speaker was reading aloud"),
       speakerLocale: locale,
     },
+    READONLY_TOOL,
     async ({ audioPath: path, referenceText, speakerLocale }) => {
       try {
         const blobURL = await client.uploadBlobUrl(path);
@@ -46,6 +47,7 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
       referenceText: z.string().min(1).describe("The text the speaker was reading aloud"),
       speakerLocale: locale,
     },
+    READONLY_TOOL,
     async ({ audioPath: path, referenceText, speakerLocale }) => {
       try {
         const blobURL = await client.uploadBlobUrl(path);
@@ -70,6 +72,7 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
       audioPath: audioPath,
       speakerLocale: locale,
     },
+    READONLY_TOOL,
     async ({ audioPath: path, speakerLocale }) => {
       try {
         const blobUrl = await client.uploadBlobUrl(path);
@@ -132,6 +135,7 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
       speakerLocale: locale,
       voiceName: z.string().optional().describe('Azure Neural voice name, e.g. "fr-FR-DeniseNeural", "en-US-JennyNeural"'),
     },
+    READONLY_TOOL,
     async ({ text, speakerLocale, voiceName }) => {
       try {
         const body: Record<string, string> = { text, language: speakerLocale };
