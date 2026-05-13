@@ -19,15 +19,20 @@ function buildServer(client: ReturnType<typeof createClient>) {
   return server;
 }
 
+function createDummyClient(): ReturnType<typeof createClient> {
+  const missing = (): never => {
+    throw new Error("Vocametrix API key required. Provide your key via the x-api-key header. Get one at https://www.vocametrix.com/registration");
+  };
+  return { sdk: null as never, apiKey: "", uploadFileId: missing, uploadBlobUrl: missing, get: missing, post: missing };
+}
+
 async function handleMcpRequest(req: IncomingMessage, res: ServerResponse) {
   const apiKey = req.headers["x-api-key"] as string | undefined;
   let client: ReturnType<typeof createClient>;
   try {
     client = createClient(apiKey);
   } catch {
-    res.writeHead(401, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Missing API key. Set x-api-key header with your Vocametrix API key from https://www.vocametrix.com/registration" }));
-    return;
+    client = createDummyClient();
   }
 
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
