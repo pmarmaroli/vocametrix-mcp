@@ -19,7 +19,17 @@ function buildServer(client: ReturnType<typeof createClient>) {
   return server;
 }
 
-async function handleMcpRequest(req: IncomingMessage, res: ServerResponse, client: ReturnType<typeof createClient>) {
+async function handleMcpRequest(req: IncomingMessage, res: ServerResponse) {
+  const apiKey = req.headers["x-api-key"] as string | undefined;
+  let client: ReturnType<typeof createClient>;
+  try {
+    client = createClient(apiKey);
+  } catch {
+    res.writeHead(401, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Missing API key. Set x-api-key header with your Vocametrix API key from https://www.vocametrix.com/registration" }));
+    return;
+  }
+
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
   const mcpServer = buildServer(client);
   await mcpServer.connect(transport);
@@ -41,18 +51,10 @@ async function handleMcpRequest(req: IncomingMessage, res: ServerResponse, clien
 const port = process.env.PORT ? parseInt(process.env.PORT) : null;
 
 if (port) {
-  let client: ReturnType<typeof createClient>;
-  try {
-    client = createClient();
-  } catch (err) {
-    console.error("[vocametrix-mcp] Startup error:", err instanceof Error ? err.message : String(err));
-    process.exit(1);
-  }
-
   const httpServer = createServer((req, res) => {
     const url = req.url ?? "";
     if (url === "/mcp" || url.startsWith("/mcp?")) {
-      handleMcpRequest(req, res, client!).catch((err) => {
+      handleMcpRequest(req, res).catch((err) => {
         console.error("[vocametrix-mcp] Request error:", err);
         if (!res.headersSent) { res.writeHead(500); res.end("Internal server error"); }
       });

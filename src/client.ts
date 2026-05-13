@@ -15,11 +15,11 @@ export interface ApiClient {
   post(path: string, body: unknown): Promise<unknown>;
 }
 
-export function createClient(): ApiClient {
-  const apiKey = process.env["VOCAMETRIX_API_KEY"];
+export function createClient(explicitKey?: string): ApiClient {
+  const apiKey = explicitKey ?? process.env["VOCAMETRIX_API_KEY"];
   if (!apiKey) {
     throw new Error(
-      "VOCAMETRIX_API_KEY environment variable is required. " +
+      "VOCAMETRIX_API_KEY is required. " +
       "Get a key at https://www.vocametrix.com/registration",
     );
   }
