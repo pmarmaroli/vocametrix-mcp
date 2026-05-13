@@ -8,6 +8,19 @@ import { createClient } from "./client.js";
 import { registerAllTools } from "./tools/index.js";
 import { registerResources } from "./resources.js";
 import { registerPrompts } from "./prompts.js";
+import { runSetup } from "./setup.js";
+
+const cliArgs = process.argv.slice(2);
+if (cliArgs.includes("--setup")) {
+  const keyArg = cliArgs.find(a => a.startsWith("--key="));
+  const key = keyArg ? keyArg.slice("--key=".length) : process.env["VOCAMETRIX_API_KEY"];
+  if (!key) {
+    console.error("Usage: npx @vocametrix/mcp-server --setup --key=YOUR_API_KEY");
+    process.exit(1);
+  }
+  runSetup(key);
+  process.exit(0);
+}
 
 const { version } = createRequire(import.meta.url)("../package.json") as { version: string };
 

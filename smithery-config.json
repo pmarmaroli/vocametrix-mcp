@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "required": ["vocametrixApiKey"],
+  "properties": {
+    "vocametrixApiKey": {
+      "type": "string",
+      "title": "Vocametrix API Key",
+      "description": "Your Vocametrix API key. Get one at https://www.vocametrix.com/registration — free trial includes 5 minutes of analysis or 5 API credits."
+    }
+  }
+}
