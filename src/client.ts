@@ -18,10 +18,10 @@ export interface ApiClient {
    */
   uploadBlobUrl(audioInput: string): Promise<string>;
   /**
-   * Upload raw base64-encoded audio to Azure Blob and get both blobUrl and fileId.
+   * Upload raw base64-encoded audio to Azure Blob and return the blobUrl.
    * Use this from the vocametrix_upload_audio tool.
    */
-  uploadAudioFromBase64(base64: string): Promise<{ blobUrl: string; fileId: string }>;
+  uploadAudioFromBase64(base64: string): Promise<{ blobUrl: string }>;
   /** Call a Vocametrix API endpoint directly with X-API-Key auth */
   get(path: string, params?: Record<string, string>): Promise<unknown>;
   post(path: string, body: unknown): Promise<unknown>;
@@ -110,11 +110,8 @@ export function createClient(explicitKey?: string): ApiClient {
       const data = base64.startsWith("data:")
         ? Buffer.from(base64.slice(base64.indexOf(",") + 1), "base64")
         : Buffer.from(base64, "base64");
-      const [blobUrl, fileId] = await Promise.all([
-        uploadBufferToBlob(data),
-        uploadBufferToFileId(data, "mcp@vocametrix.com"),
-      ]);
-      return { blobUrl, fileId };
+      const blobUrl = await uploadBufferToBlob(data);
+      return { blobUrl };
     },
 
     async get(path, params) {
