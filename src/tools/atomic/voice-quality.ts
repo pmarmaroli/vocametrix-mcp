@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok, READONLY_TOOL } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 import { audioPath, gender, age, AVQI_VERSION } from "../../schemas/common.js";
 
 export function registerVoiceQualityTools(server: McpServer, client: ApiClient): void {
@@ -37,7 +37,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── DSI ─────────────────────────────────────────────────────────────────────
   server.tool(
@@ -74,7 +74,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── CPP ─────────────────────────────────────────────────────────────────────
   server.tool(
@@ -97,7 +97,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── HNR ─────────────────────────────────────────────────────────────────────
   server.tool(
@@ -126,7 +126,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Jitter / Shimmer ────────────────────────────────────────────────────────
   server.tool(
@@ -149,7 +149,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── VRP / Ambitus ────────────────────────────────────────────────────────────
   server.tool(
@@ -177,7 +177,7 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Prosody Similarity ───────────────────────────────────────────────────────
   server.tool(
@@ -204,5 +204,5 @@ export function registerVoiceQualityTools(server: McpServer, client: ApiClient):
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 }

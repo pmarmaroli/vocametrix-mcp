@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok, READONLY_TOOL, STATEFUL_TOOL, DESTRUCTIVE_TOOL } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL, STATEFUL_TOOL, DESTRUCTIVE_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 
 export function registerTherapyTools(server: McpServer, client: ApiClient): void {
   // ── Generate Therapy Plan ────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Therapy Status ───────────────────────────────────────────────────────────
   server.tool(
@@ -49,7 +49,7 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Therapy Result ───────────────────────────────────────────────────────────
   server.tool(
@@ -67,7 +67,7 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Approve Therapy Plan ─────────────────────────────────────────────────────
   server.tool(
@@ -96,5 +96,5 @@ export function registerTherapyTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 }

@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok, READONLY_TOOL } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 import { audioPath, gender, age } from "../../schemas/common.js";
 
 export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient): void {
@@ -35,7 +35,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Formant Statistics ───────────────────────────────────────────────────────
   server.tool(
@@ -64,7 +64,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── S/Z Ratio ───────────────────────────────────────────────────────────────
   server.tool(
@@ -101,7 +101,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── GNE ─────────────────────────────────────────────────────────────────────
   server.tool(
@@ -124,7 +124,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── H1-H2 ───────────────────────────────────────────────────────────────────
   server.tool(
@@ -151,7 +151,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── ABI ─────────────────────────────────────────────────────────────────────
   server.tool(
@@ -181,7 +181,7 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Voice Dynamics ───────────────────────────────────────────────────────────
   server.tool(
@@ -210,5 +210,5 @@ export function registerAdvancedVoiceTools(server: McpServer, client: ApiClient)
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 }

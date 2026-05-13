@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok, READONLY_TOOL, STATEFUL_TOOL } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL, STATEFUL_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 
 export function registerAiAgentTools(server: McpServer, client: ApiClient): void {
   // ── Interpret Voice Metrics ──────────────────────────────────────────────────
@@ -32,7 +32,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Generate Exercises ───────────────────────────────────────────────────────
   server.tool(
@@ -57,7 +57,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Word List Generator ──────────────────────────────────────────────────────
   server.tool(
@@ -83,7 +83,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Speech Therapist Assistant ───────────────────────────────────────────────
   server.tool(
@@ -108,7 +108,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── French to IPA ────────────────────────────────────────────────────────────
   server.tool(
@@ -134,7 +134,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Spell Agent ──────────────────────────────────────────────────────────────
   server.tool(
@@ -158,7 +158,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Syntax Checker ───────────────────────────────────────────────────────────
   server.tool(
@@ -177,7 +177,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Vocabulary Tutor ─────────────────────────────────────────────────────────
   server.tool(
@@ -201,7 +201,7 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Adaptive Exercise ────────────────────────────────────────────────────────
   server.tool(
@@ -225,5 +225,5 @@ export function registerAiAgentTools(server: McpServer, client: ApiClient): void
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 }

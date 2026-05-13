@@ -6,7 +6,7 @@ import { tmpdir } from "os";
 import { randomUUID } from "crypto";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { ok, READONLY_TOOL } from "../../utils/mcp.js";
+import { ok, READONLY_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 import { audioPath, locale } from "../../schemas/common.js";
 
 export function registerCoreSpeechTools(server: McpServer, client: ApiClient): void {
@@ -34,7 +34,7 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Pronunciation + Pitch ────────────────────────────────────────────────────
   server.tool(
@@ -59,7 +59,7 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
         return ok(result);
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── Transcription ────────────────────────────────────────────────────────────
   server.tool(
@@ -117,7 +117,7 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
         return ok(lastEvent ?? { transcriptionId, status: "unknown" });
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
   // ── TTS ─────────────────────────────────────────────────────────────────────
   server.tool(
@@ -151,6 +151,6 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
         return ok({ filePath, dataUrl, format, voice: result["voice"], textLength: result["textLength"] });
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 
 }

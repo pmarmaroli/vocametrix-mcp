@@ -4,7 +4,7 @@ import { readdirSync } from "fs";
 import { join, extname } from "path";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { READONLY_TOOL } from "../../utils/mcp.js";
+import { READONLY_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 
 interface PronunciationRow {
   file: string;
@@ -80,5 +80,5 @@ export function registerBatchPronunciation(server: McpServer, client: ApiClient)
         return { content: [{ type: "text" as const, text: output }] };
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 }

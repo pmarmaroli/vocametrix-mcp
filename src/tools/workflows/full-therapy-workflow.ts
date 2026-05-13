@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { ApiClient } from "../../client.js";
 import { translateError } from "../../errors.js";
-import { STATEFUL_TOOL } from "../../utils/mcp.js";
+import { STATEFUL_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 
 export function registerFullTherapyWorkflow(server: McpServer, client: ApiClient): void {
   server.tool(
@@ -59,5 +59,5 @@ export function registerFullTherapyWorkflow(server: McpServer, client: ApiClient
         };
       } catch (e) { return translateError(e); }
     },
-  );
+  ).update({ outputSchema: GENERIC_OUTPUT_SCHEMA });
 }
