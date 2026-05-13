@@ -6,10 +6,22 @@ const BASE_URL = "https://platform.vocametrix.com";
 export interface ApiClient {
   sdk: VocametrixClient;
   apiKey: string;
-  /** Upload audio file and return a fileId (for Praat-based endpoints) */
-  uploadFileId(audioPath: string, email?: string): Promise<string>;
-  /** Upload audio file to Azure Blob and return the blobURL (for streaming endpoints) */
-  uploadBlobUrl(audioPath: string): Promise<string>;
+  /**
+   * Upload audio and return a fileId (for Praat-based endpoints).
+   * Accepts: local file path, HTTP/HTTPS URL, data URL, or raw base64 string.
+   */
+  uploadFileId(audioInput: string, email?: string): Promise<string>;
+  /**
+   * Upload audio to Azure Blob and return the blobURL (for streaming endpoints).
+   * If audioInput is already an HTTP/HTTPS URL, it is returned as-is.
+   * Accepts: local file path, HTTP/HTTPS URL, data URL, or raw base64 string.
+   */
+  uploadBlobUrl(audioInput: string): Promise<string>;
+  /**
+   * Upload raw base64-encoded audio to Azure Blob and get both blobUrl and fileId.
+   * Use this from the vocametrix_upload_audio tool.
+   */
+  uploadAudioFromBase64(base64: string): Promise<{ blobUrl: string; fileId: string }>;
   /** Call a Vocametrix API endpoint directly with X-API-Key auth */
   get(path: string, params?: Record<string, string>): Promise<unknown>;
   post(path: string, body: unknown): Promise<unknown>;
@@ -39,35 +51,70 @@ export function createClient(explicitKey?: string): ApiClient {
     return resp.json();
   }
 
+  async function resolveToBuffer(input: string): Promise<Buffer> {
+    if (input.startsWith("http://") || input.startsWith("https://")) {
+      const resp = await fetch(input);
+      if (!resp.ok) throw new Error(`Failed to download audio from URL: HTTP ${resp.status}`);
+      return Buffer.from(await resp.arrayBuffer());
+    }
+    if (input.startsWith("data:")) {
+      const comma = input.indexOf(",");
+      if (comma === -1) throw new Error("Invalid data URL");
+      return Buffer.from(input.slice(comma + 1), "base64");
+    }
+    return readFileSync(input);
+  }
+
+  async function uploadBufferToBlob(data: Buffer): Promise<string> {
+    const json = await apiFetch(`${BASE_URL}/api/get-blob-url`, {
+      method: "POST",
+    }) as { uploadURL: string; blobURL: string };
+    const put = await fetch(json.uploadURL, {
+      method: "PUT",
+      body: data,
+      headers: { "x-ms-blob-type": "BlockBlob", "Content-Type": "audio/wav" },
+    });
+    if (!put.ok) throw new Error(`Azure upload failed: ${String(put.status)}`);
+    return json.blobURL;
+  }
+
+  async function uploadBufferToFileId(data: Buffer, email: string): Promise<string> {
+    const form = new FormData();
+    form.append("audio", new Blob([data], { type: "audio/wav" }), "audio.wav");
+    form.append("email", email);
+    const json = await apiFetch(`${BASE_URL}/api/assignFileId`, {
+      method: "POST",
+      body: form,
+    }) as { fileId: string };
+    return json.fileId;
+  }
+
   return {
     sdk,
     apiKey,
 
-    async uploadFileId(audioPath, email = "mcp@vocametrix.com") {
-      const data = readFileSync(audioPath);
-      const form = new FormData();
-      form.append("audio", new Blob([data], { type: "audio/wav" }), "audio.wav");
-      form.append("email", email);
-      const json = await apiFetch(`${BASE_URL}/api/assignFileId`, {
-        method: "POST",
-        body: form,
-      }) as { fileId: string };
-      return json.fileId;
+    async uploadFileId(audioInput, email = "mcp@vocametrix.com") {
+      const data = await resolveToBuffer(audioInput);
+      return uploadBufferToFileId(data, email);
     },
 
-    async uploadBlobUrl(audioPath) {
-      const json = await apiFetch(`${BASE_URL}/api/get-blob-url`, {
-        method: "POST",
-      }) as { uploadURL: string; blobURL: string };
+    async uploadBlobUrl(audioInput) {
+      if (audioInput.startsWith("http://") || audioInput.startsWith("https://")) {
+        return audioInput;
+      }
+      const data = await resolveToBuffer(audioInput);
+      return uploadBufferToBlob(data);
+    },
 
-      const data = readFileSync(audioPath);
-      const put = await fetch(json.uploadURL, {
-        method: "PUT",
-        body: data,
-        headers: { "x-ms-blob-type": "BlockBlob", "Content-Type": "audio/wav" },
-      });
-      if (!put.ok) throw new Error(`Azure upload failed: ${String(put.status)}`);
-      return json.blobURL;
+    async uploadAudioFromBase64(base64) {
+      const data = base64.startsWith("data:")
+        ? Buffer.from(base64.slice(base64.indexOf(",") + 1), "base64")
+        : Buffer.from(base64, "base64");
+      const [blobUrl, fileId] = await Promise.all([
+        uploadBufferToBlob(data),
+        uploadBufferToFileId(data, "mcp@vocametrix.com"),
+      ]);
+      return { blobUrl, fileId };
     },
 
     async get(path, params) {

@@ -36,7 +36,7 @@ function createDummyClient(): ReturnType<typeof createClient> {
   const missing = (): never => {
     throw new Error("Vocametrix API key required. Provide your key via the x-api-key header. Get one at https://www.vocametrix.com/registration");
   };
-  return { sdk: null as never, apiKey: "", uploadFileId: missing, uploadBlobUrl: missing, get: missing, post: missing };
+  return { sdk: null as never, apiKey: "", uploadFileId: missing, uploadBlobUrl: missing, uploadAudioFromBase64: missing, get: missing, post: missing };
 }
 
 function extractKeyFromUrl(url: string | undefined): string | undefined {

@@ -2,7 +2,12 @@ import { z } from "zod";
 
 export const audioPath = z
   .string()
-  .describe("Absolute path to a WAV audio file on the local filesystem");
+  .describe(
+    "Audio file input. Accepted formats: " +
+    "(1) absolute local file path (e.g. /home/user/audio.wav) for stdio/local mode; " +
+    "(2) a blobUrl (https://...) returned by vocametrix_upload_audio — use this when the user " +
+    "provided an audio file in the conversation (call vocametrix_upload_audio first to upload it)."
+  );
 
 export const gender = z
   .enum(["1", "2", "3"])
