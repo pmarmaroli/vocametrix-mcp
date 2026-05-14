@@ -20,10 +20,10 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
     READONLY_TOOL,
     async ({ audioPath: path, startSec, endSec }) => {
       try {
-        const blobURL = await client.uploadBlobUrl(path);
-        const body: Record<string, unknown> = { blobURL, start_sec: startSec };
-        if (endSec !== undefined) body["end_sec"] = endSec;
-        const result = await client.post("/api/soundLevel", body);
+        const blobUrl = await client.uploadBlobUrl(path);
+        // API requires stop_sec; pass a large sentinel meaning "to end of file" when caller omits it.
+        const stopSec = endSec ?? 999999;
+        const result = await client.post("/api/soundLevel", { blobUrl, start_sec: startSec, stop_sec: stopSec });
         return ok(result);
       } catch (e) { return translateError(e); }
     },
@@ -46,7 +46,7 @@ export function registerAudioMeasureTools(server: McpServer, client: ApiClient):
     async ({ audioPath: path }) => {
       try {
         const fileId = await client.uploadFileId(path);
-        const result = await client.get("/api/gemaps-extract", { svFileId: fileId });
+        const result = await client.get("/api/gemaps-extract", { fileId });
         return ok(result);
       } catch (e) { return translateError(e); }
     },

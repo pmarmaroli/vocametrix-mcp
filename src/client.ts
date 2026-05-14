@@ -99,9 +99,10 @@ export function createClient(explicitKey?: string): ApiClient {
     },
 
     async uploadBlobUrl(audioInput) {
-      if (audioInput.startsWith("http://") || audioInput.startsWith("https://")) {
-        return audioInput;
-      }
+      // Always upload to a fresh blob, even when audioInput is already an HTTPS URL.
+      // Some Vocametrix endpoints (e.g. /api/soundLevel) delete the blob after processing,
+      // so passing the same URL to a second tool would 404. A fresh upload per tool call
+      // guarantees the blob exists for the duration of that call.
       const data = await resolveToBuffer(audioInput);
       return uploadBufferToBlob(data);
     },
