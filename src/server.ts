@@ -79,6 +79,17 @@ if (port) {
   const httpServer = createServer((req, res) => {
     const url = req.url ?? "";
     if (url === "/mcp" || url.startsWith("/mcp?")) {
+      // Stateless mode: we create a fresh McpServer per HTTP request, so the
+      // standalone GET SSE notification stream the SDK would open has no producer.
+      // Per the MCP spec, returning 405 here tells clients that no server-initiated
+      // notification channel is offered — they should rely on POST request/response
+      // only. Without this, clients (e.g. Claude Desktop) hold the GET stream open
+      // and may wait for notifications that will never arrive.
+      if (req.method === "GET") {
+        res.writeHead(405, { "Allow": "POST", "Content-Type": "text/plain" });
+        res.end("Method Not Allowed: this server does not offer a notification SSE stream.");
+        return;
+      }
       handleMcpRequest(req, res).catch((err) => {
         console.error("[vocametrix-mcp] Request error:", err);
         if (!res.headersSent) { res.writeHead(500); res.end("Internal server error"); }
