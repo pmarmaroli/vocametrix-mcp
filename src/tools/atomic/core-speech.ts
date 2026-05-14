@@ -75,9 +75,9 @@ export function registerCoreSpeechTools(server: McpServer, client: ApiClient): v
     READONLY_TOOL,
     async ({ audioPath: path, speakerLocale }) => {
       try {
-        const blobUrl = await client.uploadBlobUrl(path);
+        const blobURL = await client.uploadBlobUrl(path);
         const submitResult = await client.post("/api/offline-speech-to-text", {
-          blobUrl,
+          blobURL,
           locale: speakerLocale,
         }) as { transcriptionId: string };
 
