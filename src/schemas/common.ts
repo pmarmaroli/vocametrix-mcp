@@ -3,10 +3,16 @@ import { z } from "zod";
 export const audioPath = z
   .string()
   .describe(
-    "Audio file input. Accepted formats: " +
-    "(1) absolute local file path (e.g. /home/user/audio.wav) for stdio/local mode; " +
-    "(2) a blobUrl (https://...) returned by vocametrix_upload_audio — use this when the user " +
-    "provided an audio file in the conversation (call vocametrix_upload_audio first to upload it)."
+    "Audio source. MUST be one of: " +
+    "(a) a Vocametrix blobUrl (https://...) returned by vocametrix_upload_audio — REQUIRED " +
+    "whenever the user attached a file in the conversation; you MUST call " +
+    "vocametrix_upload_audio FIRST and pass the returned blobUrl here; " +
+    "(b) a publicly fetchable HTTPS URL pointing to a WAV file; " +
+    "(c) an absolute local file path (only valid in stdio/local mode where the MCP server " +
+    "runs on the same machine as the client — NEVER pass a local path when running against " +
+    "the hosted/remote MCP server). " +
+    "DO NOT pass internal file references, conversation attachment identifiers, opaque file " +
+    "IDs, or filenames — the remote MCP server cannot resolve them and the call will fail."
   );
 
 export const gender = z
