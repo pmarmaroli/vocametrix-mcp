@@ -52,6 +52,12 @@ Get an API key at [vocametrix.com/registration](https://www.vocametrix.com/regis
 | `vocametrix_abi` | Acoustic Breathiness Index |
 | `vocametrix_voice_dynamics` | Dynamic range and fundamental frequency statistics |
 
+### Ingestion utilities
+| Tool | Description |
+|------|-------------|
+| `vocametrix_upload_audio` | Upload a WAV file (base64) → returns a stable blobUrl |
+| `vocametrix_ingest_url` | Ingest a public HTTPS WAV URL → returns a stable blobUrl |
+
 ### Speech and pronunciation
 | Tool | Description |
 |------|-------------|
@@ -123,6 +129,7 @@ The `audioPath` parameter accepts several input types, but **which ones are vali
 |---|---|---|
 | `https://...` blobUrl from `vocametrix_upload_audio` | ✅ recommended | ✅ |
 | Public `https://...` URL to a WAV file | ✅ | ✅ |
+| Public URL via `vocametrix_ingest_url` → returned blobUrl | ✅ recommended for URL inputs | ✅ |
 | `data:audio/wav;base64,...` data URL | ✅ | ✅ |
 | Raw base64 string (≥ 512 chars) | ✅ | ✅ |
 | Absolute local path (`/home/...`, `C:\...`) | ❌ rejected | ⚠️ requires `VOCAMETRIX_MCP_LOCAL_FS=1` |
