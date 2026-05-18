@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ApiClient } from "../client.js";
 import { registerUploadTool } from "./atomic/upload.js";
+import { registerIngestUrlTool } from "./atomic/ingest.js";
 import { registerVoiceQualityTools } from "./atomic/voice-quality.js";
 import { registerAdvancedVoiceTools } from "./atomic/advanced-voice.js";
 import { registerCoreSpeechTools } from "./atomic/core-speech.js";
@@ -13,6 +14,7 @@ import { registerFullTherapyWorkflow } from "./workflows/full-therapy-workflow.j
 
 export function registerAllTools(server: McpServer, client: ApiClient): void {
   registerUploadTool(server, client);
+  registerIngestUrlTool(server, client);
   registerVoiceQualityTools(server, client);
   registerAdvancedVoiceTools(server, client);
   registerCoreSpeechTools(server, client);
