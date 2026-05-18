@@ -115,11 +115,28 @@ Get an API key at [vocametrix.com/registration](https://www.vocametrix.com/regis
 - Connected speech tasks: 5–30 seconds of read passage
 - Minimum sampling rate: 16 kHz
 
+### How to pass audio to a tool
+
+The `audioPath` parameter accepts several input types, but **which ones are valid depends on how the MCP server is running**:
+
+| Input | Hosted / remote server | Stdio / local server (`npx`, Claude Desktop) |
+|---|---|---|
+| `https://...` blobUrl from `vocametrix_upload_audio` | ✅ recommended | ✅ |
+| Public `https://...` URL to a WAV file | ✅ | ✅ |
+| `data:audio/wav;base64,...` data URL | ✅ | ✅ |
+| Raw base64 string (≥ 512 chars) | ✅ | ✅ |
+| Absolute local path (`/home/...`, `C:\...`) | ❌ rejected | ⚠️ requires `VOCAMETRIX_MCP_LOCAL_FS=1` |
+
+**For chat clients that attach audio in the conversation (Claude.ai web/mobile, etc.)**, the LLM cannot pass an absolute path to a hosted server — it must call `vocametrix_upload_audio` first with the file content base64-encoded, then pass the returned `blobUrl` as `audioPath` to any analysis tool. The MCP descriptions guide the LLM toward this workflow automatically.
+
+**For stdio/local deployments where the MCP runs on the user's own machine**, set `VOCAMETRIX_MCP_LOCAL_FS=1` to allow analysis tools to read absolute local paths directly — convenient for batch processing of files already on disk.
+
 ## Environment variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `VOCAMETRIX_API_KEY` | Yes | Your Vocametrix API key |
+| `VOCAMETRIX_MCP_LOCAL_FS` | No | Set to `1` to allow analysis tools to read absolute local file paths (stdio/local deployments only). Default off — local paths are rejected with an actionable error so chat clients are pushed toward the `vocametrix_upload_audio` → `blobUrl` workflow. |
 
 ## Development
 
@@ -128,7 +145,8 @@ git clone https://github.com/pmarmaroli/vocametrix-mcp.git
 cd vocametrix-mcp
 npm install
 npm run build
-npm run inspector  # Test with MCP Inspector
+npm test            # run unit tests
+npm run inspector   # test with MCP Inspector
 ```
 
 ## MCP Registry
