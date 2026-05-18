@@ -7,14 +7,20 @@ import { ok, READONLY_TOOL, GENERIC_OUTPUT_SCHEMA } from "../../utils/mcp.js";
 export function registerUploadTool(server: McpServer, client: ApiClient): void {
   server.tool(
     "vocametrix_upload_audio",
-    "Upload an audio file to Vocametrix cloud storage. " +
-    "Call this tool FIRST whenever the user provides an audio file in the conversation. " +
-    "Encode the file content as a base64 string and pass it here. " +
-    "Returns a blobUrl and fileId — pass the blobUrl as the audioPath parameter in all subsequent Vocametrix tools.",
+    "Upload an audio file to Vocametrix cloud storage and obtain a blobUrl. " +
+    "THIS IS THE MANDATORY FIRST STEP whenever the user attaches an audio file in the " +
+    "conversation — the remote Vocametrix MCP server cannot read your local filesystem or " +
+    "resolve chat-client attachment identifiers. " +
+    "Workflow: (1) read the attached audio file's binary content, (2) base64-encode it, " +
+    "(3) call this tool with that base64 string, (4) take the returned blobUrl and pass it " +
+    "as the audioPath parameter to any analysis tool (assessment, classification, metrics, " +
+    "transcription, etc.). " +
+    "Never pass attachment IDs, file references, or local paths directly to analysis tools.",
     {
       audioBase64: z.string().describe(
-        "Base64-encoded audio file content (raw base64 or data URL format: data:audio/wav;base64,...). " +
-        "Read the uploaded file and encode it to base64 before calling this tool."
+        "Base64-encoded audio file content. Accepts raw base64 OR data URL format " +
+        "(data:audio/wav;base64,...). Read the attached file's bytes and encode them yourself " +
+        "before calling — do not pass an attachment identifier or filename."
       ),
     },
     READONLY_TOOL,

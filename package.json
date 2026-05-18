@@ -15,6 +15,7 @@
     "start": "node dist/server.js",
     "dev": "tsx src/server.ts",
     "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test tests/*.test.mjs",
     "inspector": "npx @modelcontextprotocol/inspector dist/server.js"
   },
   "files": ["dist", "README.md", "LICENSE"],

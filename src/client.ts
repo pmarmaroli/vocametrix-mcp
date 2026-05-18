@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
 import { VocametrixClient } from "vocametrix";
+import { resolveAudioInputToBuffer } from "./utils/audio-input.js";
 
 const BASE_URL = "https://platform.vocametrix.com";
 
@@ -51,20 +51,6 @@ export function createClient(explicitKey?: string): ApiClient {
     return resp.json();
   }
 
-  async function resolveToBuffer(input: string): Promise<Buffer> {
-    if (input.startsWith("http://") || input.startsWith("https://")) {
-      const resp = await fetch(input);
-      if (!resp.ok) throw new Error(`Failed to download audio from URL: HTTP ${resp.status}`);
-      return Buffer.from(await resp.arrayBuffer());
-    }
-    if (input.startsWith("data:")) {
-      const comma = input.indexOf(",");
-      if (comma === -1) throw new Error("Invalid data URL");
-      return Buffer.from(input.slice(comma + 1), "base64");
-    }
-    return readFileSync(input);
-  }
-
   async function uploadBufferToBlob(data: Buffer): Promise<string> {
     const json = await apiFetch(`${BASE_URL}/api/get-blob-url`, {
       method: "POST",
@@ -94,7 +80,7 @@ export function createClient(explicitKey?: string): ApiClient {
     apiKey,
 
     async uploadFileId(audioInput, email = "mcp@vocametrix.com") {
-      const data = await resolveToBuffer(audioInput);
+      const data = await resolveAudioInputToBuffer(audioInput);
       return uploadBufferToFileId(data, email);
     },
 
@@ -103,7 +89,7 @@ export function createClient(explicitKey?: string): ApiClient {
       // Some Vocametrix endpoints (e.g. /api/soundLevel) delete the blob after processing,
       // so passing the same URL to a second tool would 404. A fresh upload per tool call
       // guarantees the blob exists for the duration of that call.
-      const data = await resolveToBuffer(audioInput);
+      const data = await resolveAudioInputToBuffer(audioInput);
       return uploadBufferToBlob(data);
     },
 
